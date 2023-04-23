@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import com.google.maps.DirectionsApi
 import androidx.compose.runtime.*
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.isPopupLayout
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
@@ -39,6 +41,7 @@ import com.google.maps.GeoApiContext
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.compose.*
 import com.google.maps.model.TravelMode
+import com.manalkaff.jetstick.JoyStick
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
@@ -134,6 +137,8 @@ private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier)
             val current_pos_latlng = LatLng(current_loc.latitude, current_loc.longitude)
             testMapsFun(current_pos_latlng, destination, waypoints)
         }
+
+        JstickTest()
 
         SearchButton { destination_selected ->
             run {
@@ -236,4 +241,17 @@ fun SearchButton(
             Text("Select Location")
         }
     }
+}
+
+
+@Composable
+fun JstickTest(){
+    JoyStick(
+        Modifier.padding(30.dp),
+        size = 150.dp,
+        dotSize = 30.dp
+    ){ x: Float, y: Float ->
+        Log.d("JoyStick", "$x, $y")
+    }
+
 }
