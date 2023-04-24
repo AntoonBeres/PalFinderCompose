@@ -1,63 +1,37 @@
 package com.example.testcompose
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context.SENSOR_SERVICE
 import android.content.pm.PackageManager
 import android.hardware.SensorManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import com.google.maps.DirectionsApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.maps.GeoApiContext
-import com.google.maps.android.compose.*
 import com.google.maps.model.TravelMode
-import com.manalkaff.jetstick.JoyStick
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.ln
-import kotlin.math.tan
 
 
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
-
 /*
 This is like the main function, this is the entry point of our application
  */
 class MainActivity : ComponentActivity() {
-    private var lastLocation: Location? = null
-    private var isLocationAvailable: Boolean = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            globalView()
+            GlobalView()
         }
     }
 }
@@ -82,7 +56,7 @@ object ApiProvider {
 
 // The global composable, initializes location data and sets everything up
 @Composable
-private fun globalView(modifier: Modifier = Modifier) {
+private fun GlobalView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
@@ -123,27 +97,27 @@ private fun globalView(modifier: Modifier = Modifier) {
     fusedLocationClient.requestLocationUpdates(
         locationRequest.build(), locationCallback, Looper.getMainLooper()
     )
-
     Surface(modifier) {
-        palFinderView(lastLocation)
+        PalFinderView(lastLocation)
     }
 }
-
 // Put everything together (search, maps, joystick, ..)
 @Composable
-private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier) {
+private fun PalFinderView(current_loc: Location?, modifier: Modifier = Modifier) {
     var destination by remember { mutableStateOf(LatLng(1.35, 103.87)) }
     var waypoints: List<LatLng> by remember { mutableStateOf(emptyList()) }
 
     Surface(modifier) {
         if (current_loc == null) {
-            mapsComposable(destination, destination, waypoints)
+            MapsComposable(destination, destination, waypoints)
         } else {
             val current_pos_latlng = LatLng(current_loc.latitude, current_loc.longitude)
-            mapsComposable(current_pos_latlng, destination, waypoints)
+            MapsComposable(current_pos_latlng, destination, waypoints)
         }
-        joyStickComposable()
-        SearchButton { destination_selected ->
+        JoyStickComposable()
+
+        //Search button stuff, set destination marker + waypoints when destination is selected
+        SearchButtonComposable { destination_selected ->
             run {
                 destination_selected.latLng?.let { selectedLocation ->
                     destination = selectedLocation
@@ -170,148 +144,8 @@ private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier)
                 }
             }
         }
-
+        // END of SearchButton stuff
     }
 }
 
 
-// The actual maps composable
-@Composable
-fun mapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>) {
-    //Example location + camera position
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(current_pos, 10f)
-    }
-
-    // Add zooming + "my location" button
-    val uiSettings by remember {
-        mutableStateOf(
-            MapUiSettings(
-                myLocationButtonEnabled = true,
-                mapToolbarEnabled = true,
-                compassEnabled = false,
-                rotationGesturesEnabled = true
-            )
-        )
-    }
-    val properties by remember {
-        mutableStateOf(MapProperties(isMyLocationEnabled = true))
-    }
-
-    // Initiallize map
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        properties = properties,
-        uiSettings = uiSettings,
-
-        ) {
-        //Add markers
-        Marker(
-            state = MarkerState(position = destination_marker),
-            title = "Destination",
-            snippet = "Navigation Destination"
-        )
-        Polyline(
-            points = waypoints,
-            visible = true,
-            width = 10f,
-        )
-
-    }
-}
-
-@Composable
-fun SearchButton(
-    onDestinationSelected: (destination_selected: Place) -> Unit
-) {
-    val context = LocalContext.current
-    val intentLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) {
-        when (it.resultCode) {
-            Activity.RESULT_OK -> {
-                it.data?.let {
-                    val place = Autocomplete.getPlaceFromIntent(it)
-                    onDestinationSelected(place)
-                }
-            }
-
-            Activity.RESULT_CANCELED -> {
-                // The user canceled the operation. do nothing
-            }
-        }
-    }
-    val launchMapInputOverlay = {
-        Places.initialize(context, BuildConfig.GOOGLE_MAPS_API_KEY)
-        val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
-        val intent = Autocomplete
-            .IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-            .build(context)
-        intentLauncher.launch(intent)
-    }
-    Column {
-        Button(onClick = launchMapInputOverlay) {
-            Text("Select Destination")
-        }
-    }
-}
-
-@Composable
-fun joyStickComposable() {
-    val sensorManager = LocalContext.current.getSystemService(SENSOR_SERVICE) as SensorManager
-    val accelerometerReading = FloatArray(3)
-    val magnetometerReading = FloatArray(3)
-
-    val rotationMatrix = FloatArray(9)
-    val orientationAngles = FloatArray(3)
-
-    SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)
-    SensorManager.getOrientation(rotationMatrix, orientationAngles)
-    // North = 0degrees
-    val azimuth = orientationAngles[0]
-
-    val haptic = LocalHapticFeedback.current
-    JoyStick(
-        Modifier.absoluteOffset(100.dp, 550.dp),
-        size = 200.dp,
-        dotSize = 50.dp
-    ) { x: Float, y: Float ->
-
-        //val angle = ((atan2(y,x)/ PI)*180f)- 90f
-        val angle: Double = if (y < 0) -(((atan2(y, x) / PI) * 180f) - 90f) else (((atan2(y, x) / PI) * 180f) - 90f);
-
-        if (angle < 20 && angle > -20){
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-        }
-
-        Log.d("JoyStick", "$angle")
-
-    }
-}
-
-fun radians(n: Double): Double {
-    return n * (PI / 180);
-}
-
-fun degrees(n: Double): Double {
-    return n * (180 / Math.PI);
-}
-fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Double): Double {
-    val startLat = radians(startLat);
-    val startLong = radians(startLong);
-    val endLat = radians(endLat);
-    val endLong = radians(endLong);
-
-    var dLong = endLong - startLong;
-
-    val dPhi = ln(tan(endLat/2.0+Math.PI/4.0) / tan(startLat/2.0+Math.PI/4.0));
-
-    if (abs(dLong) > PI){
-        if (dLong > 0.0)
-            dLong = -(2.0 * PI - dLong);
-        else
-            dLong = (2.0 * PI + dLong);
-    }
-    return (degrees(atan2(dLong, dPhi)) + 360.0) % 360.0;
-}
