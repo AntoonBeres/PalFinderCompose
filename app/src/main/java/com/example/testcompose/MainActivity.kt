@@ -2,64 +2,44 @@ package com.example.testcompose
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Context.SENSOR_SERVICE
 import android.content.pm.PackageManager
-import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
-import android.widget.SearchView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import com.google.maps.DirectionsApi
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.isPopupLayout
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.lifecycle.ViewModel
-import com.example.testcompose.ui.theme.TestComposeTheme
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.maps.GeoApiContext
-import com.google.maps.android.PolyUtil
 import com.google.maps.android.compose.*
 import com.google.maps.model.TravelMode
 import com.manalkaff.jetstick.JoyStick
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.ln
-import kotlin.math.log
 import kotlin.math.tan
 
 
@@ -82,7 +62,25 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+//TODO create separate composable for sensor data instead of having it together with the joystick
+@Composable
+fun myComposable() {
 
+    val sensorManager = LocalContext.current.getSystemService(SENSOR_SERVICE) as SensorManager
+    //...
+}
+
+// Copied from Kristi's version, I have honestly no idea why it doesn't work without this
+object ApiProvider {
+    //Custom context containing the GOOGLE_MAPS_API_KEY as required by DirectionsAPI
+    fun getGeoContext(): GeoApiContext {
+        return GeoApiContext.Builder()
+            .apiKey(BuildConfig.GOOGLE_MAPS_API_KEY)
+            .build()
+    }
+}
+
+// The global composable, initializes location data and sets everything up
 @Composable
 private fun globalView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -126,29 +124,12 @@ private fun globalView(modifier: Modifier = Modifier) {
         locationRequest.build(), locationCallback, Looper.getMainLooper()
     )
 
-
-
     Surface(modifier) {
         palFinderView(lastLocation)
     }
 }
 
-@Composable
-fun myComposable() {
-
-    val sensorManager = LocalContext.current.getSystemService(SENSOR_SERVICE) as SensorManager
-    //...
-}
-
-object ApiProvider {
-    //Custom context containing the GOOGLE_MAPS_API_KEY as required by DirectionsAPI
-    fun getGeoContext(): GeoApiContext {
-        return GeoApiContext.Builder()
-            .apiKey(BuildConfig.GOOGLE_MAPS_API_KEY)
-            .build()
-    }
-}
-
+// Put everything together (search, maps, joystick, ..)
 @Composable
 private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier) {
     var destination by remember { mutableStateOf(LatLng(1.35, 103.87)) }
@@ -156,12 +137,12 @@ private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier)
 
     Surface(modifier) {
         if (current_loc == null) {
-            testMapsFun(destination, destination, waypoints)
+            mapsComposable(destination, destination, waypoints)
         } else {
             val current_pos_latlng = LatLng(current_loc.latitude, current_loc.longitude)
-            testMapsFun(current_pos_latlng, destination, waypoints)
+            mapsComposable(current_pos_latlng, destination, waypoints)
         }
-        JstickTest()
+        joyStickComposable()
         SearchButton { destination_selected ->
             run {
                 destination_selected.latLng?.let { selectedLocation ->
@@ -180,7 +161,7 @@ private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier)
                                     destination.latitude,
                                     destination.longitude
                                 )
-                            ).mode(TravelMode.WALKING).await()
+                            ).mode(TravelMode.BICYCLING).await()
                     directionResult.routes.forEach { route ->
                         val points = route.overviewPolyline.decodePath()
                         waypoints = points.map { point -> LatLng(point.lat, point.lng) }.toList()
@@ -189,12 +170,14 @@ private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier)
                 }
             }
         }
-        
+
     }
 }
 
+
+// The actual maps composable
 @Composable
-fun testMapsFun(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>) {
+fun mapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>) {
     //Example location + camera position
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(current_pos, 10f)
@@ -269,13 +252,13 @@ fun SearchButton(
     }
     Column {
         Button(onClick = launchMapInputOverlay) {
-            Text("Select Location")
+            Text("Select Destination")
         }
     }
 }
 
 @Composable
-fun JstickTest() {
+fun joyStickComposable() {
     val sensorManager = LocalContext.current.getSystemService(SENSOR_SERVICE) as SensorManager
     val accelerometerReading = FloatArray(3)
     val magnetometerReading = FloatArray(3)
