@@ -55,8 +55,6 @@ import com.google.maps.model.TravelMode
 import com.manalkaff.jetstick.JoyStick
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityScoped
-import javax.inject.Inject
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -129,12 +127,11 @@ private fun globalView(modifier: Modifier = Modifier) {
     )
 
 
+
     Surface(modifier) {
         palFinderView(lastLocation)
     }
-
 }
-
 
 @Composable
 fun myComposable() {
@@ -165,7 +162,6 @@ private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier)
             testMapsFun(current_pos_latlng, destination, waypoints)
         }
         JstickTest()
-
         SearchButton { destination_selected ->
             run {
                 destination_selected.latLng?.let { selectedLocation ->
@@ -193,6 +189,7 @@ private fun palFinderView(current_loc: Location?, modifier: Modifier = Modifier)
                 }
             }
         }
+        
     }
 }
 
@@ -317,7 +314,7 @@ fun radians(n: Double): Double {
 fun degrees(n: Double): Double {
     return n * (180 / Math.PI);
 }
-fun bearing(startLat: Double, startLong: Double, endLat: Double, endLong: Double): Double {
+fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Double): Double {
     val startLat = radians(startLat);
     val startLong = radians(startLong);
     val endLat = radians(endLat);
