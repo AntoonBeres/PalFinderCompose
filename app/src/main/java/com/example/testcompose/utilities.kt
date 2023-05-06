@@ -30,3 +30,16 @@ fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Dou
     }
     return (degrees(atan2(dLong, dPhi)) + 360.0) % 360.0;
 }
+
+
+fun distanceLatLng(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Double{  // generally used geo measurement function
+    val R = 6378.137; // Radius of earth in KM
+    val dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
+    val dLon = lon2 * Math.PI / 180 - lon1 * Math.PI / 180;
+    val a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    val d = R * c;
+    return d * 1000; // meters
+}

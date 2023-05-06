@@ -1,6 +1,7 @@
 package com.example.testcompose
 
 import android.Manifest
+import android.content.Context
 import android.content.Context.SENSOR_SERVICE
 import android.content.pm.PackageManager
 import android.hardware.SensorManager
@@ -154,13 +155,26 @@ private fun PalFinderView(current_loc: Location?, modifier: Modifier = Modifier)
                             ).mode(TravelMode.BICYCLING).await()
                     directionResult.routes.forEach { route ->
                         val points = route.overviewPolyline.decodePath()
-                        waypoints = points.map { point -> LatLng(point.lat, point.lng) }.toList()
+
+                        val w1 = points.map { point -> LatLng(point.lat, point.lng)}.toList()
+
+                        //Remove waypoints in quick succession of eachother -> smoothens the path
+                        val w2 = ArrayList<LatLng>()
+                        w2.add(w1[0])
+                        var last_point = w1[0]
+                        for (i in 1 until w1.size) {
+                            if (distanceLatLng(last_point.latitude, last_point.longitude, w1[i].latitude, w1[i].longitude) > 30) {
+                                w2.add(w1[i])
+                                last_point = w1[i]
+                            }
+                        }
+                        waypoints = w2.map { point -> LatLng(point.latitude, point.longitude)}.toList()
 
                     }
                 }
             }
         }
-        NewJoystick()
+        //NewJoystick()
         // END of SearchButton stuff
     }
 }
@@ -171,9 +185,25 @@ private fun PalFinderView(current_loc: Location?, modifier: Modifier = Modifier)
 
 @Composable
 private fun NewJoystick() {
-    var posX by remember { mutableStateOf(0f) }
-    var posY by remember { mutableStateOf(0f) }
+    var posX by remember { mutableStateOf(500f) }
+    var posY by remember { mutableStateOf(1500f) }
+
+    // Initialize haptic feedback
     val haptic = LocalHapticFeedback.current
+
+    // Initialize sensor data
+    val sensorManager = LocalContext.current.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    val accelerometerReading = FloatArray(3)
+    val magnetometerReading = FloatArray(3)
+
+    val rotationMatrix = FloatArray(9)
+    val orientationAngles = FloatArray(3)
+
+    SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)
+    SensorManager.getOrientation(rotationMatrix, orientationAngles)
+    // North = 0degrees
+    val azimuth = orientationAngles[0]
+
     Box(
         modifier = Modifier.fillMaxWidth()
             .absolutePadding(left = 0.dp, right = 0.dp, top= 50.dp, bottom = 0.dp)
