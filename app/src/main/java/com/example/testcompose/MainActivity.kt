@@ -7,18 +7,34 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import com.google.maps.DirectionsApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.GeoApiContext
 import com.google.maps.model.TravelMode
+import com.manalkaff.jetstick.JoyStick
+import kotlin.math.PI
+import kotlin.math.atan2
+import kotlin.math.roundToInt
 
 
 import kotlin.time.Duration.Companion.seconds
@@ -114,7 +130,7 @@ private fun PalFinderView(current_loc: Location?, modifier: Modifier = Modifier)
             val current_pos_latlng = LatLng(current_loc.latitude, current_loc.longitude)
             MapsComposable(current_pos_latlng, destination, waypoints)
         }
-        JoyStickComposable()
+        //JoyStickComposable()
 
         //Search button stuff, set destination marker + waypoints when destination is selected
         SearchButtonComposable { destination_selected ->
@@ -144,8 +160,46 @@ private fun PalFinderView(current_loc: Location?, modifier: Modifier = Modifier)
                 }
             }
         }
+        NewJoystick()
         // END of SearchButton stuff
     }
 }
 
+
+
+
+
+@Composable
+private fun NewJoystick() {
+    var posX by remember { mutableStateOf(0f) }
+    var posY by remember { mutableStateOf(0f) }
+    val haptic = LocalHapticFeedback.current
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .absolutePadding(left = 0.dp, right = 0.dp, top= 50.dp, bottom = 0.dp)
+            .fillMaxHeight()
+           // .background(Color.Blue)
+            .pointerInput(Unit){
+                detectTapGestures {taplocation ->
+                    posX = taplocation.x
+                    posY = taplocation.y
+                }
+            }
+    ) {
+        JoyStick(
+            Modifier.offset { IntOffset(posX.roundToInt() -250, posY.roundToInt()-250) }.alpha(0.5f),
+            size = 200.dp,
+            dotSize = 50.dp
+        ) { x: Float, y: Float ->
+
+            //val angle = ((atan2(y,x)/ PI)*180f)- 90f
+            val angle: Double = if (y < 0) -(((atan2(y, x) / PI) * 180f) - 90f) else (((atan2(y, x) / PI) * 180f) - 90f);
+
+            if (angle < 20 && angle > -20){
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
+            Log.d("JoyStick", "$angle")
+        }
+    }
+}
 
