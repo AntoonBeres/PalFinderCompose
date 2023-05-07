@@ -11,8 +11,6 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -20,7 +18,6 @@ import com.google.maps.DirectionsApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -124,6 +121,8 @@ private fun PalFinderView(current_loc: Location?, modifier: Modifier = Modifier)
     var destination by remember { mutableStateOf(LatLng(1.35, 103.87)) }
     var waypoints: List<LatLng> by remember { mutableStateOf(emptyList()) }
 
+    var navigate_running by remember { mutableStateOf(false)}
+
     Surface(modifier) {
         if (current_loc == null) {
             MapsComposable(destination, destination, waypoints)
@@ -132,6 +131,15 @@ private fun PalFinderView(current_loc: Location?, modifier: Modifier = Modifier)
             MapsComposable(current_pos_latlng, destination, waypoints)
         }
         //JoyStickComposable()
+        Text(text = "navigate", modifier.absolutePadding(left = 200.dp, right = 5.dp, top = 0.dp, bottom = 0.dp))
+
+        Switch(
+            checked = navigate_running,
+            onCheckedChange = {navigate_running = !navigate_running},
+            modifier = Modifier
+                .absolutePadding(left = 200.dp, right = 0.dp, top = 10.dp, bottom = 0.dp)
+        )
+
 
         //Search button stuff, set destination marker + waypoints when destination is selected
         SearchButtonComposable { destination_selected ->
@@ -174,8 +182,16 @@ private fun PalFinderView(current_loc: Location?, modifier: Modifier = Modifier)
                 }
             }
         }
-        //NewJoystick()
         // END of SearchButton stuff
+        //NewJoystick()
+        if(navigate_running){
+            ImprovedJoystickController(){ x: Float, y: Float ->
+                val y = -y
+                val angle: Double = Math.atan2(y.toDouble(), x.toDouble()) * (180/ Math.PI)
+                val zero_top = angle-90
+                Log.d("JoyStick", "$zero_top")
+            }
+        }
     }
 }
 
@@ -205,19 +221,22 @@ private fun NewJoystick() {
     val azimuth = orientationAngles[0]
 
     Box(
-        modifier = Modifier.fillMaxWidth()
-            .absolutePadding(left = 0.dp, right = 0.dp, top= 50.dp, bottom = 0.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .absolutePadding(left = 0.dp, right = 0.dp, top = 50.dp, bottom = 0.dp)
             .fillMaxHeight()
-           // .background(Color.Blue)
-            .pointerInput(Unit){
-                detectTapGestures {taplocation ->
+            // .background(Color.Blue)
+            .pointerInput(Unit) {
+                detectTapGestures { taplocation ->
                     posX = taplocation.x
                     posY = taplocation.y
                 }
             }
     ) {
         JoyStick(
-            Modifier.offset { IntOffset(posX.roundToInt() -250, posY.roundToInt()-250) }.alpha(0.5f),
+            Modifier
+                .offset { IntOffset(posX.roundToInt() - 250, posY.roundToInt() - 250) }
+                .alpha(0.5f),
             size = 200.dp,
             dotSize = 50.dp
         ) { x: Float, y: Float ->
@@ -232,4 +251,8 @@ private fun NewJoystick() {
         }
     }
 }
+
+
+
+
 

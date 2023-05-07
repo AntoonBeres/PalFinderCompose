@@ -18,6 +18,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 
 // The actual maps composable
+// Based on official documentation on how to use it: https://developers.google.com/maps/documentation/android-sdk/maps-compose
 @Composable
 fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>) {
     //Example location + camera position
@@ -52,6 +53,7 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
             title = "Destination",
             snippet = "Navigation Destination"
         )
+        // Plot route of waypoints
         Polyline(
             points = waypoints,
             visible = true,

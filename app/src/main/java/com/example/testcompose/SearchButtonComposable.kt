@@ -13,11 +13,15 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 
+
+
+// Based on: https://stackoverflow.com/questions/70834787/implementing-google-places-autocomplete-textfield-implementation-in-jetpack-comp
 @Composable
 fun SearchButtonComposable(
     onDestinationSelected: (destination_selected: Place) -> Unit
 ) {
     val context = LocalContext.current
+    // Intentlauncher
     val intentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
@@ -25,15 +29,15 @@ fun SearchButtonComposable(
             Activity.RESULT_OK -> {
                 it.data?.let {
                     val place = Autocomplete.getPlaceFromIntent(it)
-                    onDestinationSelected(place)
+                    onDestinationSelected(place) // Run "onDestinationSelected" with the selected place as argument
                 }
             }
-
             Activity.RESULT_CANCELED -> {
                 // The user canceled the operation. do nothing
             }
         }
     }
+    // Launch the overlay with an intent
     val launchMapInputOverlay = {
         Places.initialize(context, BuildConfig.GOOGLE_MAPS_API_KEY)
         val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
@@ -42,6 +46,7 @@ fun SearchButtonComposable(
             .build(context)
         intentLauncher.launch(intent)
     }
+    // Add visible search button
     Column {
         Button(onClick = launchMapInputOverlay) {
             Text("Select Destination")

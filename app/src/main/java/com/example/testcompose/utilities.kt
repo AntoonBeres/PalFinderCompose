@@ -6,12 +6,16 @@ import kotlin.math.atan2
 import kotlin.math.ln
 import kotlin.math.tan
 
-fun radians(n: Double): Double {
-    return n * (PI / 180);
+// Degrees to radians
+fun radians(degrees: Double): Double {
+    return degrees * (PI / 180);
 }
-fun degrees(n: Double): Double {
-    return n * (180 / Math.PI);
+
+// Radians to degrees
+fun degrees(radians: Double): Double {
+    return radians * (180 / Math.PI);
 }
+
 fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Double): Double {
     val startLat = radians(startLat);
     val startLong = radians(startLong);
@@ -31,7 +35,7 @@ fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Dou
     return (degrees(atan2(dLong, dPhi)) + 360.0) % 360.0;
 }
 
-
+// Adapted from : https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 fun distanceLatLng(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Double{  // generally used geo measurement function
     val R = 6378.137; // Radius of earth in KM
     val dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
@@ -43,3 +47,4 @@ fun distanceLatLng(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Dou
     val d = R * c;
     return d * 1000; // meters
 }
+
