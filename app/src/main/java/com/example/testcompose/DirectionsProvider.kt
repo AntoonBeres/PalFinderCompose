@@ -23,11 +23,11 @@ min_segment_length: the minimum length of each segment
 fun List<com.google.android.gms.maps.model.LatLng>.smootheRoute(min_segment_length: Int): List<com.google.android.gms.maps.model.LatLng> {
     val w2 = ArrayList<com.google.android.gms.maps.model.LatLng>()
     w2.add(this[0])
-    var last_point = this[0]
+    var lastPoint = this[0]
     for (i in 1 until this.size) {
-        if (distanceLatLng(last_point.latitude, last_point.longitude, this[i].latitude, this[i].longitude) > min_segment_length) {
+        if (distanceLatLng(lastPoint.latitude, lastPoint.longitude, this[i].latitude, this[i].longitude) > min_segment_length) {
             w2.add(this[i])
-            last_point = this[i]
+            lastPoint = this[i]
         }
     }
     return w2.toList()

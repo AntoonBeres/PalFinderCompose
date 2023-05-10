@@ -46,6 +46,7 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
         SearchButtonComposable { destination_selected ->
             run {
                 destination_selected.latLng?.let { selectedLocation ->
+                    destination = selectedLocation
                     if (current_loc != null) {
                         waypoints = DirectionsProvider.getRouteWaypoints(
                             current_loc.latitude,

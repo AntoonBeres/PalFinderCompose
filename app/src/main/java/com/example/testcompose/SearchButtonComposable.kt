@@ -26,10 +26,10 @@ fun SearchButtonComposable(
     // launch an intent for selecting a destination using the places API
     val intentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
-    ) {
-        when (it.resultCode) {
+    ) { activityResult ->
+        when (activityResult.resultCode) {
             Activity.RESULT_OK -> {
-                it.data?.let {
+                activityResult.data?.let {
                     val place = Autocomplete.getPlaceFromIntent(it)
                     onDestinationSelected(place) // Run "onDestinationSelected" with the selected place as argument
                 }
