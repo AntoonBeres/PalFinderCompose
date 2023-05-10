@@ -35,16 +35,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Copied from Kristi's version, I have honestly no idea why it doesn't work without this
-object ApiProvider {
-    //Custom context containing the GOOGLE_MAPS_API_KEY as required by DirectionsAPI
-    fun getGeoContext(): GeoApiContext {
-        return GeoApiContext.Builder()
-            .apiKey(BuildConfig.GOOGLE_MAPS_API_KEY)
-            .build()
-    }
-}
-
 // The global composable, initializes location data and sets everything up
 @Composable
 private fun GlobalView(modifier: Modifier = Modifier) {

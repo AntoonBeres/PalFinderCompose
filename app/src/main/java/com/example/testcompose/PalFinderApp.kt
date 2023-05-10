@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.LatLng
+import kotlin.math.atan2
 
 
 // Put everything together (search, maps, joystick, ..)
@@ -21,45 +22,53 @@ import com.google.android.gms.maps.model.LatLng
 fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
     var destination by remember { mutableStateOf(LatLng(1.35, 103.87)) }
     var waypoints: List<LatLng> by remember { mutableStateOf(emptyList()) }
+    var navigationRunning by remember { mutableStateOf(false) }
 
-    var navigate_running by remember { mutableStateOf(false) }
+    val directionsProvider = DirectionsProvider()
 
-    val directions_receiver = Directions()
-
+    // The surface on which all components are drawn
     Surface(modifier) {
         if (current_loc == null) {
             MapsComposable(destination, destination, waypoints)
         } else {
-            val current_pos_latlng = LatLng(current_loc.latitude, current_loc.longitude)
-            MapsComposable(current_pos_latlng, destination, waypoints)
+            val currentPosLatlng = LatLng(current_loc.latitude, current_loc.longitude)
+            MapsComposable(currentPosLatlng, destination, waypoints)
         }
-        //JoyStickComposable()
+
+        // A switch to turn tactile navigation on or off
         Text(text = "navigate", modifier.absolutePadding(left = 180.dp, right = 5.dp, top = 0.dp, bottom = 0.dp))
         Switch(
-            checked = navigate_running,
-            onCheckedChange = {navigate_running = !navigate_running},
+            checked = navigationRunning,
+            onCheckedChange = {navigationRunning = !navigationRunning},
             modifier = Modifier
                 .absolutePadding(left = 180.dp, right = 0.dp, top = 10.dp, bottom = 0.dp)
         )
-        //Search button stuff, set destination marker + waypoints when destination is selected
+
+        //Search button for selecting a destination to navigate to
         SearchButtonComposable { destination_selected ->
             run {
                 destination_selected.latLng?.let { selectedLocation ->
                     destination = selectedLocation
                     if (current_loc != null) {
-                        waypoints = directions_receiver.getRouteWaypoints(current_loc.latitude, current_loc.longitude, selectedLocation.latitude, selectedLocation.longitude)
+                        waypoints = directionsProvider.getRouteWaypoints(
+                            current_loc.latitude,
+                            current_loc.longitude,
+                            selectedLocation.latitude,
+                            selectedLocation.longitude
+                        )
                     }
                 }
             }
         }
-        // END of SearchButton stuff
-        //NewJoystick()
-        if(navigate_running){
+        // If tactile navigation is enabled, capture user-input via the virtual joystick
+        if(navigationRunning){
             ImprovedJoystickController(){ x: Float, y: Float ->
-                val y = -y
-                val angle: Double = Math.atan2(y.toDouble(), x.toDouble()) * (180/ Math.PI)
-                val zero_top = angle-90
-                Log.d("JoyStick", "$zero_top")
+                //Convert screen positioning to coordinates
+                // (the y-coordinate returned by dragging increases when going down and decreases when going up)
+                val yCoord = -y
+                val angle: Double = atan2(yCoord.toDouble(), x.toDouble()) * (180/ Math.PI)
+                val zeroTop = angle-90
+                Log.d("JoyStick", "$zeroTop")
             }
         }
     }
