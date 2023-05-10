@@ -6,16 +6,19 @@ import kotlin.math.atan2
 import kotlin.math.ln
 import kotlin.math.tan
 
-// Degrees to radians
+//Antoon Beres
+// Degrees to radians, simple utilities function
 fun radians(degrees: Double): Double {
     return degrees * (PI / 180);
 }
-
-// Radians to degrees
+//Antoon Beres
+// Radians to degrees, simple utilities function
 fun degrees(radians: Double): Double {
     return radians * (180 / Math.PI);
 }
-
+// Antoon Beres
+// Code ported from following python code:
+// https://geoffruddock.com/calculate-angle-between-coordinates-with-redshift-udfs/
 fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Double): Double {
     val startLat = radians(startLat);
     val startLong = radians(startLong);
@@ -35,6 +38,7 @@ fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Dou
     return (degrees(atan2(dLong, dPhi)) + 360.0) % 360.0;
 }
 
+// Antoon Beres
 // Adapted from : https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 fun distanceLatLng(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Double{  // generally used geo measurement function
     val R = 6378.137; // Radius of earth in KM

@@ -14,6 +14,8 @@ import com.manalkaff.jetstick.JoyStick
 import kotlin.math.PI
 import kotlin.math.atan2
 
+
+// Old Joystick, now deprecated
 @Composable
 fun JoyStickComposable() {
     val sensorManager = LocalContext.current.getSystemService(Context.SENSOR_SERVICE) as SensorManager

@@ -4,10 +4,13 @@ import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
@@ -48,7 +51,7 @@ fun SearchButtonComposable(
     }
     // Add visible search button
     Column {
-        Button(onClick = launchMapInputOverlay) {
+        Button(onClick = launchMapInputOverlay, modifier = Modifier.width(150.dp)) {
             Text("Select Destination")
         }
     }

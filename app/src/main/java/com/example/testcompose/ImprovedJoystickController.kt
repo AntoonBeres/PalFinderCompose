@@ -14,6 +14,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import kotlin.math.atan
 
+
+// New "invisible" joystick, can be used by dragging from anywhere on the screen.
 @Composable
 fun ImprovedJoystickController(
     moved: (x: Float, y: Float) -> Unit = { _, _ -> }
