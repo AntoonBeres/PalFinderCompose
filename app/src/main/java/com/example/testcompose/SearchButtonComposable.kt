@@ -24,7 +24,8 @@ fun SearchButtonComposable(
     onDestinationSelected: (destination_selected: Place) -> Unit
 ) {
     val context = LocalContext.current
-    // Intentlauncher
+
+    // launch an intent for selecting a destination using the places API
     val intentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {

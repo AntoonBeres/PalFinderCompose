@@ -10,17 +10,9 @@ import com.google.maps.model.TravelMode
 Converts a result from the "directions api" into a list of waypoints
  */
 fun Array<out DirectionsRoute>?.toWaypoints(): List<com.google.android.gms.maps.model.LatLng> {
-    var result: List<com.google.android.gms.maps.model.LatLng> = emptyList()
-    this?.forEach { route ->
-        val points = route.overviewPolyline.decodePath()
-        result = points.map { point ->
-            com.google.android.gms.maps.model.LatLng(
-                point.lat,
-                point.lng
-            )
-        }.toList()
+    return this?.last()!!.overviewPolyline.decodePath().map { point ->
+        com.google.android.gms.maps.model.LatLng(point.lat, point.lng)
     }
-    return result
 }
 
 /*
@@ -41,7 +33,10 @@ fun List<com.google.android.gms.maps.model.LatLng>.smootheRoute(min_segment_leng
     return w2.toList()
 }
 
-class DirectionsProvider {
+/*
+Singleton object providing directions
+ */
+object DirectionsProvider {
     private val context: GeoApiContext = GeoApiContext.Builder()
         .apiKey(BuildConfig.GOOGLE_MAPS_API_KEY)
         .build()

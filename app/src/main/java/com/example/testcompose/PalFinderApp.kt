@@ -24,8 +24,6 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
     var waypoints: List<LatLng> by remember { mutableStateOf(emptyList()) }
     var navigationRunning by remember { mutableStateOf(false) }
 
-    val directionsProvider = DirectionsProvider()
-
     // The surface on which all components are drawn
     Surface(modifier) {
         if (current_loc == null) {
@@ -50,7 +48,7 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
                 destination_selected.latLng?.let { selectedLocation ->
                     destination = selectedLocation
                     if (current_loc != null) {
-                        waypoints = directionsProvider.getRouteWaypoints(
+                        waypoints = DirectionsProvider.getRouteWaypoints(
                             current_loc.latitude,
                             current_loc.longitude,
                             selectedLocation.latitude,
