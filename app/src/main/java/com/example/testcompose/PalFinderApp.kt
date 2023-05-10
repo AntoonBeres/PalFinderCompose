@@ -63,8 +63,7 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
             ImprovedJoystickController(){ x: Float, y: Float ->
                 //Convert screen positioning to coordinates
                 // (the y-coordinate returned by dragging increases when going down and decreases when going up)
-                val yCoord = -y
-                val angle: Double = atan2(yCoord.toDouble(), x.toDouble()) * (180/ Math.PI)
+                val angle: Double = atan2(y.toDouble(), x.toDouble()) * (180/ Math.PI)
                 val zeroTop = angle-90
                 Log.d("JoyStick", "$zeroTop")
             }

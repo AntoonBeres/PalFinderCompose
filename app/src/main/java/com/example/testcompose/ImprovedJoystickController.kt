@@ -61,7 +61,7 @@ fun ImprovedJoystickController(
             }
             .onGloballyPositioned {
                 moved(
-                    offsetX, offsetY
+                    offsetX, -offsetY
                 )
             }
     )

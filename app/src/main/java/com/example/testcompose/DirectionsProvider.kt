@@ -14,7 +14,6 @@ fun Array<out DirectionsRoute>?.toWaypoints(): List<com.google.android.gms.maps.
         com.google.android.gms.maps.model.LatLng(point.lat, point.lng)
     }
 }
-
 /*
 Smoothes the route by removing waypoints leading to segments shorter than a specified minimum segment length
 Arguments:
@@ -32,7 +31,6 @@ fun List<com.google.android.gms.maps.model.LatLng>.smootheRoute(min_segment_leng
     }
     return w2.toList()
 }
-
 /*
 Singleton object providing directions
  */

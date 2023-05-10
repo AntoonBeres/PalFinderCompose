@@ -38,7 +38,7 @@ fun JoyStickComposable() {
     ) { x: Float, y: Float ->
 
         //val angle = ((atan2(y,x)/ PI)*180f)- 90f
-        val angle: Double = if (y < 0) -(((atan2(y, x) / PI) * 180f) - 90f) else (((atan2(y, x) / PI) * 180f) - 90f);
+        val angle: Double = if (y < 0) -(((atan2(y, x) / PI) * 180f) - 90f) else (((atan2(y, x) / PI) * 180f) - 90f)
 
         if (angle < 20 && angle > -20){
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
