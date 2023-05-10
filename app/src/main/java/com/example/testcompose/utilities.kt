@@ -7,7 +7,7 @@ import kotlin.math.ln
 import kotlin.math.tan
 
 //Antoon Beres
-// Degrees to radians, simple utilities function
+// Degrees to radians, simple utility function
 fun radians(degrees: Double): Double {
     return degrees * (PI / 180);
 }
