@@ -58,13 +58,18 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
                 }
             }
         }
-        // If tactile navigation is enabled, capture user-input via the virtual joystick
+        // If tactile navigation is enabled, capture user-input via the virtual joystick and
+        // disable map-controls
         if(navigationRunning){
             ImprovedJoystickController(){ x: Float, y: Float ->
                 //Convert screen positioning to coordinates
                 // (the y-coordinate returned by dragging increases when going down and decreases when going up)
                 val angle: Double = atan2(y.toDouble(), x.toDouble()) * (180/ Math.PI)
-                val zeroTop = angle-90
+                val zeroTop = if(angle > 90){
+                    angle -90
+                } else {
+                    angle +270
+                }
                 Log.d("JoyStick", "$zeroTop")
             }
         }

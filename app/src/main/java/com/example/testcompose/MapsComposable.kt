@@ -17,7 +17,8 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
 
-// The actual maps composable
+// The actual maps composable:
+// Draws an interactive map on the screen
 // Based on official documentation on how to use it: https://developers.google.com/maps/documentation/android-sdk/maps-compose
 @Composable
 fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>) {
@@ -25,7 +26,7 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(current_pos, 10f)
     }
-    // Add zooming + "my location" button
+    // Add zooming buttons + "my location" button and enable gestures
     val uiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -39,7 +40,7 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
     val properties by remember {
         mutableStateOf(MapProperties(isMyLocationEnabled = true))
     }
-    // Initiallize map
+    // Initiallize the map
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -47,7 +48,7 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
         uiSettings = uiSettings,
 
         ) {
-        //Add markers
+        //Add markers, a marker is added at the destination
         Marker(
             state = MarkerState(position = destination_marker),
             title = "Destination",

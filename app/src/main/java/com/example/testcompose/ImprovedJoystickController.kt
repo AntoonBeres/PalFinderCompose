@@ -15,12 +15,14 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.atan
 
 
-// New "invisible" joystick, can be used by dragging from anywhere on the screen.
+// The new "invisible" joystick, can be used by dragging from anywhere on the screen.
+// Some of the code was inspired by the source code for the original joystick component
+// https://github.com/manalkaff/JetStick
 @Composable
 fun ImprovedJoystickController(
     moved: (x: Float, y: Float) -> Unit = { _, _ -> }
 ) {
-    var theta by remember { mutableStateOf(0f) }
+    //var theta by remember { mutableStateOf(0f) }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
 
@@ -30,7 +32,7 @@ fun ImprovedJoystickController(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .absolutePadding(left = 0.dp, right = 0.dp, top = 50.dp, bottom = 0.dp)
+            .absolutePadding(left = 0.dp, right = 0.dp, top = 50.dp, bottom = 0.dp) // some padding on the top for the search-button etc
             .fillMaxHeight()
             .pointerInput(Unit) {
                 detectDragGestures(onDragStart = {
@@ -42,6 +44,8 @@ fun ImprovedJoystickController(
                     val y = offsetY + offset.y
                     pointerInputChange.consume()
 
+                    //
+                    /*
                     theta = if (x >= 0 && y >= 0) {
                         atan(y / x)
                     } else if (x < 0 && y >= 0) {
@@ -52,10 +56,11 @@ fun ImprovedJoystickController(
                         atan(y / x)
                     }
 
+                    theta = (theta + Math.PI/2).toFloat()*/
                     offsetX += offset.x
                     offsetY += offset.y
                     moved(
-                        offsetX, offsetY
+                        offsetX, -offsetY
                     )
                 }
             }

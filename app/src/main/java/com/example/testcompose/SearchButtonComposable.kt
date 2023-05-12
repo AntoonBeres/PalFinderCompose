@@ -16,7 +16,10 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 
-// Based on: https://stackoverflow.com/questions/70834787/implementing-google-places-autocomplete-textfield-implementation-in-jetpack-comp
+// Search button
+// This creates the button for selecting a destination by name using the google places api
+// A lot of code taken from:
+// https://stackoverflow.com/questions/70834787/implementing-google-places-autocomplete-textfield-implementation-in-jetpack-comp
 @Composable
 fun SearchButtonComposable(
     onDestinationSelected: (destination_selected: Place) -> Unit
