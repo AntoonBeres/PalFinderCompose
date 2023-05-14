@@ -9,6 +9,11 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.suspendCancellableCoroutine
 
+
+/*
+Taken from: https://medium.com/@daniel.atitienei/get-current-user-location-in-jetpack-compose-using-clean-architecture-android-6683abca66c9
+ */
+
 interface LocationTracker {
     suspend fun getCurrentLocation(): Location?
 }

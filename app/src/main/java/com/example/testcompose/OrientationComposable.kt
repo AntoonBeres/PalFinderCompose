@@ -24,6 +24,10 @@ import com.mutualmobile.composesensors.rememberGeomagneticRotationVectorSensorSt
 import com.mutualmobile.composesensors.rememberMagneticFieldSensorState
 import com.mutualmobile.composesensors.rememberRotationVectorSensorState
 
+
+/*
+Uses the open-source compose-sensors package: https://github.com/mutualmobile/ComposeSensors
+ */
 @Composable
 fun OrientationComposable(
     moved: (azimuth: Float) -> Unit = { _ -> }
@@ -32,7 +36,7 @@ fun OrientationComposable(
 
     val magneticFieldSensorState = rememberMagneticFieldSensorState()
     val accelerometerSensorState = rememberAccelerometerSensorState()
-    
+
 
     val accelerometerReading = FloatArray(3)
     val magnetometerReading = FloatArray(3)
