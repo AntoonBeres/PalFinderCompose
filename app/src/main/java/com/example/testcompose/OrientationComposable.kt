@@ -26,12 +26,13 @@ import com.mutualmobile.composesensors.rememberRotationVectorSensorState
 
 @Composable
 fun OrientationComposable(
-    moved: (azimuth: Double) -> Unit = { _ -> }
+    moved: (azimuth: Float) -> Unit = { _ -> }
 ) {
     //val orientationState = rememberRotationVectorSensorState()
 
     val magneticFieldSensorState = rememberMagneticFieldSensorState()
     val accelerometerSensorState = rememberAccelerometerSensorState()
+    
 
     val accelerometerReading = FloatArray(3)
     val magnetometerReading = FloatArray(3)
@@ -50,7 +51,7 @@ fun OrientationComposable(
 
     SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)
     SensorManager.getOrientation(rotationMatrix, orientationAngles)
-    val azimuth = Math.toDegrees(orientationAngles[0].toDouble())
+    val azimuth = orientationAngles[0]
 
     moved(azimuth)
 
