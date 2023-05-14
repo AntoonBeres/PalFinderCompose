@@ -20,7 +20,7 @@ fun radians(degrees: Double): Double {
     return degrees * (PI / 180)
 }
 //Antoon Beres
-// Radians to degrees, simple utilities function
+// Radians to degrees, simple utility function
 fun degrees(radians: Double): Double {
     return radians * (180 / Math.PI)
 }

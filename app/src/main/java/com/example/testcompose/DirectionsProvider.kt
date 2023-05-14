@@ -15,7 +15,8 @@ fun Array<out DirectionsRoute>?.toWaypoints(): List<com.google.android.gms.maps.
     }
 }
 /*
-Smoothes the route by removing waypoints leading to segments shorter than a specified minimum segment length
+Smoothes the route by removing waypoints
+leading to only having segments longer than a specified minimum segment length
 Arguments:
 min_segment_length: the minimum length of each segment
  */
@@ -32,20 +33,23 @@ fun List<com.google.android.gms.maps.model.LatLng>.smootheRoute(min_segment_leng
     return w2.toList()
 }
 /*
-Singleton object providing directions
+Singleton object for getting directions from one point to another
  */
 object DirectionsProvider {
+    // Build the API-context
     private val context: GeoApiContext = GeoApiContext.Builder()
         .apiKey(BuildConfig.GOOGLE_MAPS_API_KEY)
         .build()
+    // Get a route between 2 coordinates, given their latitude and longitude
     fun getRouteWaypoints(origin_lat: Double, origin_lng: Double, dest_lat: Double, dest_lng: Double): List<com.google.android.gms.maps.model.LatLng> {
         val origin = LatLng(origin_lat, origin_lng)
         val dest = LatLng(dest_lat, dest_lng)
         val directionResult = DirectionsApi
             .newRequest(context)
             .origin(origin)
-            .destination(dest).mode(TravelMode.BICYCLING)
+            .destination(dest).mode(TravelMode.BICYCLING) //"BICYCLING" gives a smoother route than "WALKING"
             .await()
+        // Convert to waypoints and smooth the route
         return directionResult.routes.toWaypoints().smootheRoute(30)
     }
 }

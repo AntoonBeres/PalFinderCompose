@@ -22,7 +22,6 @@ import kotlin.math.atan
 fun ImprovedJoystickController(
     moved: (x: Float, y: Float) -> Unit = { _, _ -> }
 ) {
-    //var theta by remember { mutableStateOf(0f) }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
 
@@ -44,19 +43,6 @@ fun ImprovedJoystickController(
                     val y = offsetY + offset.y
                     pointerInputChange.consume()
 
-                    //
-                    /*
-                    theta = if (x >= 0 && y >= 0) {
-                        atan(y / x)
-                    } else if (x < 0 && y >= 0) {
-                        (Math.PI).toFloat() + atan(y / x)
-                    } else if (x < 0 && y < 0) {
-                        -(Math.PI).toFloat() + atan(y / x)
-                    } else {
-                        atan(y / x)
-                    }
-
-                    theta = (theta + Math.PI/2).toFloat()*/
                     offsetX += offset.x
                     offsetY += offset.y
                     moved(

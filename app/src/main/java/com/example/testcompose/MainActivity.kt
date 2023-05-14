@@ -58,6 +58,7 @@ private fun GlobalView(modifier: Modifier = Modifier) {
             if (userLocationResult.lastLocation == null) return
             lastLocation = userLocationResult.lastLocation
         }
+
     }
     if (ActivityCompat.checkSelfPermission(
             context,

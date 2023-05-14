@@ -17,7 +17,7 @@ import com.google.android.gms.maps.model.LatLng
 import kotlin.math.atan2
 
 
-// Put everything together (search, maps, joystick, ..)
+// Put everything together (search-button, maps, joystick, ..)
 @Composable
 fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
     var destination by remember { mutableStateOf(LatLng(1.35, 103.87)) }
@@ -42,7 +42,7 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
                 .absolutePadding(left = 180.dp, right = 0.dp, top = 10.dp, bottom = 0.dp)
         )
 
-        //Search button for selecting a destination to navigate to
+        // Search button for selecting a destination to navigate to
         SearchButtonComposable { destination_selected ->
             run {
                 destination_selected.latLng?.let { selectedLocation ->
@@ -58,8 +58,10 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
                 }
             }
         }
-        // If tactile navigation is enabled, capture user-input via the virtual joystick and
-        // disable map-controls
+        /*
+         If tactile navigation is enabled, capture user-input via the virtual joystick and
+         disable map-controls
+         */
         if(navigationRunning){
             ImprovedJoystickController(){ x: Float, y: Float ->
                 //Convert screen positioning to coordinates
@@ -70,8 +72,13 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
                 } else {
                     angle +270
                 }
-                Log.d("JoyStick", "$zeroTop")
+                //Log.d("JoyStick", "$zeroTop")
             }
         }
+        OrientationComposable(){
+            Log.d("azimuth", "$it")
+        }
+
+
     }
 }
