@@ -26,16 +26,14 @@ import com.google.maps.android.compose.rememberCameraPositionState
 fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>, navEnabled: Boolean) {
     //Example location + camera position
 
-    /*val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(current_pos, 10f)
-    }*/
 
-
+    // If navigation is enabled, make the camera zoom in and track the user location
+    // otherwise, just give the user manual control over the camera
     val cameraPositionState = if(navEnabled) {
         CameraPositionState(CameraPosition.fromLatLngZoom(current_pos, 20f))
     } else {
         rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(current_pos, 12f)
+            position = CameraPosition.fromLatLngZoom(current_pos, 14f)
         }
     }
 

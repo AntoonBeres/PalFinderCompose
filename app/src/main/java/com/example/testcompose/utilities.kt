@@ -25,6 +25,7 @@ fun degrees(radians: Double): Double {
     return radians * (180 / Math.PI)
 }
 // Antoon Beres
+// Function for getting the bearing (relative to north) from 2 coordinatess
 // Code ported from following python code:
 // https://geoffruddock.com/calculate-angle-between-coordinates-with-redshift-udfs/
 fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Double): Double {
@@ -47,6 +48,7 @@ fun getBearing(startLat: Double, startLong: Double, endLat: Double, endLong: Dou
 }
 
 // Antoon Beres
+// Function for getting the distance in meters between 2 coordinates
 // Adapted from : https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 fun distanceLatLng(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Double{  // generally used geo measurement function
     val r = 6378.137 // Radius of earth in KM

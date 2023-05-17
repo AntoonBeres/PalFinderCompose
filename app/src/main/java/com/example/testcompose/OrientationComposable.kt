@@ -16,6 +16,7 @@ fun OrientationComposable(
 ) {
     //val orientationState = rememberRotationVectorSensorState()
 
+    // Get accelerometer and magnetometer readings
     val magneticFieldSensorState = rememberMagneticFieldSensorState()
     val accelerometerSensorState = rememberAccelerometerSensorState()
 
