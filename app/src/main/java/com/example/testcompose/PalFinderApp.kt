@@ -24,13 +24,14 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
     var waypoints: List<LatLng> by remember { mutableStateOf(emptyList()) }
     var navigationRunning by remember { mutableStateOf(false) }
 
+    var user_loc by remember { mutableStateOf(LatLng(1.35, 103.87)) }
     // The surface on which all components are drawn
     Surface(modifier) {
         if (current_loc == null) {
-            MapsComposable(destination, destination, waypoints)
+            MapsComposable(user_loc, destination, waypoints, navigationRunning)
         } else {
-            val currentPosLatlng = LatLng(current_loc.latitude, current_loc.longitude)
-            MapsComposable(currentPosLatlng, destination, waypoints)
+            user_loc = LatLng(current_loc.latitude, current_loc.longitude)
+            MapsComposable(user_loc, destination, waypoints, navigationRunning)
         }
 
         // A switch to turn tactile navigation on or off
@@ -63,7 +64,7 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
          disable map-controls
          */
         if(navigationRunning){
-            ImprovedJoystickController(){ x: Float, y: Float ->
+            ImprovedJoystickController { x: Float, y: Float ->
                 //Convert screen positioning to coordinates
                 // (the y-coordinate returned by dragging increases when going down and decreases when going up)
                 val angle: Double = atan2(y.toDouble(), x.toDouble()) * (180/ Math.PI)
@@ -75,8 +76,8 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
                 //Log.d("JoyStick", "$zeroTop")
             }
         }
-        OrientationComposable(){
-            Log.d("azimuth", "$it")
+        OrientationComposable {
+            //Log.d("azimuth", "$it")
         }
 
 

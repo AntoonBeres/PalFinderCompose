@@ -1,73 +1,70 @@
 package com.example.testcompose
 
-import android.app.Application
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
-import androidx.core.content.ContextCompat
+import android.os.Looper
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
-import kotlinx.coroutines.suspendCancellableCoroutine
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 
-
-/*
-Taken from: https://medium.com/@daniel.atitienei/get-current-user-location-in-jetpack-compose-using-clean-architecture-android-6683abca66c9
+/**
+ * Manages all location related tasks for the app.
  */
+@Composable
+fun LocationTracker(
+    userMoved: (x: Location?) -> Unit = { _ -> }
+) {
+    var lastLocation: Location? by remember { mutableStateOf(null) }
+    val context = LocalContext.current
+    val fusedLocationClient: FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
 
-interface LocationTracker {
-    suspend fun getCurrentLocation(): Location?
-}
 
-class DefaultLocationTracker(
-    private val fusedLocationProviderClient: FusedLocationProviderClient,
-    private val application: Application
-) : LocationTracker {
-    override suspend fun getCurrentLocation(): Location? {
-        val hasAccessFineLocationPermission = ContextCompat.checkSelfPermission(
-            application,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val hasAccessCoarseLocationPermission = ContextCompat.checkSelfPermission(
-            application,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val locationManager = application.getSystemService(
-            Context.LOCATION_SERVICE
-        ) as LocationManager
-
-        val isGpsEnabled = locationManager
-            .isProviderEnabled(LocationManager.NETWORK_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-
-        if (!isGpsEnabled && !(hasAccessCoarseLocationPermission || hasAccessFineLocationPermission)) {
-            return null
+    val locationRequest =
+        LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).apply {
+            setWaitForAccurateLocation(true)
+            setMinUpdateIntervalMillis(60)
+            setMaxUpdateDelayMillis(50)
         }
 
+    val locationCallback: LocationCallback = object : LocationCallback() {
+        override fun onLocationResult(userLocationResult: LocationResult) {
+            super.onLocationResult(userLocationResult)
+            if (userLocationResult.lastLocation == null) return
+            lastLocation = userLocationResult.lastLocation
 
-        return suspendCancellableCoroutine { cont ->
-            fusedLocationProviderClient.lastLocation.apply {
-                if (isComplete) {
-                    if (isSuccessful) {
-                        cont.resume(result) {} // Resume coroutine with location result
-                    } else {
-                        cont.resume(null) {} // Resume coroutine with null location result
-                    }
-                    return@suspendCancellableCoroutine
-                }
-                addOnSuccessListener {
-                    cont.resume(it) {}  // Resume coroutine with location result
-                }
-                addOnFailureListener {
-                    cont.resume(null) {} // Resume coroutine with null location result
-                }
-                addOnCanceledListener {
-                    cont.cancel() // Cancel the coroutine
-                }
-            }
+            userMoved(lastLocation)
         }
-
 
     }
+    if (ActivityCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        // TODO: Consider calling
+        //    ActivityCompat#requestPermissions
+        // here to request the missing permissions, and then overriding
+        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        //                                          int[] grantResults)
+        // to handle the case where the user grants the permission. See the documentation
+        // for ActivityCompat#requestPermissions for more details.
+        return
+    }
+    fusedLocationClient.requestLocationUpdates(
+        locationRequest.build(), locationCallback, Looper.getMainLooper()
+    )
 }

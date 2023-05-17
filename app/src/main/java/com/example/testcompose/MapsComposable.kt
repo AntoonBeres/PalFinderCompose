@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -22,11 +23,25 @@ import com.google.maps.android.compose.rememberCameraPositionState
 // Based on official documentation on how to use the component
 // : https://developers.google.com/maps/documentation/android-sdk/maps-compose
 @Composable
-fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>) {
+fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>, navEnabled: Boolean) {
     //Example location + camera position
-    val cameraPositionState = rememberCameraPositionState {
+
+    /*val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(current_pos, 10f)
+    }*/
+
+
+    val cameraPositionState = if(navEnabled) {
+        CameraPositionState(CameraPosition.fromLatLngZoom(current_pos, 20f))
+    } else {
+        rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(current_pos, 12f)
+        }
     }
+
+    //var cameraPositionState = CameraPosition.fromLatLngZoom(current_pos, 10f)
+
+
     // Add zooming buttons + "my location" button and enable gestures
     val uiSettings by remember {
         mutableStateOf(
@@ -34,7 +49,8 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
                 myLocationButtonEnabled = true,
                 mapToolbarEnabled = true,
                 compassEnabled = false,
-                rotationGesturesEnabled = true
+                rotationGesturesEnabled = true,
+                zoomControlsEnabled = true
             )
         )
     }

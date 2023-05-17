@@ -1,31 +1,13 @@
 package com.example.testcompose
 
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.HandlerThread
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import com.mutualmobile.composesensors.SensorDelay
-import com.mutualmobile.composesensors.SensorType
 import com.mutualmobile.composesensors.rememberAccelerometerSensorState
-import com.mutualmobile.composesensors.rememberGeomagneticRotationVectorSensorState
 import com.mutualmobile.composesensors.rememberMagneticFieldSensorState
-import com.mutualmobile.composesensors.rememberRotationVectorSensorState
 
 
 /*
+Composable for getting the current orientation of the device relative to north
 Uses the open-source compose-sensors package: https://github.com/mutualmobile/ComposeSensors
  */
 @Composable
