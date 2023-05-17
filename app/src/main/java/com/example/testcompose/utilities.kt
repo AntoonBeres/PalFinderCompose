@@ -62,3 +62,18 @@ fun distanceLatLng(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Dou
     return d * 1000 // meters
 }
 
+fun joystickPosToAngle(x: Float, y: Float): Double {
+    val angle: Double = atan2(y.toDouble(), x.toDouble()) * (180/ Math.PI)
+    // make 0 the top position
+    var zeroTop = if(angle > 90){
+        angle -90
+    } else {
+        angle +270
+    }
+    // deal with values in [-180, 180], just like the orientation values
+    if(zeroTop > 180) {
+        zeroTop -= 360
+    }
+    return zeroTop
+}
+
