@@ -32,6 +32,7 @@ private fun GlobalView(modifier: Modifier = Modifier) {
     Surface(modifier) {
         LocationTracker(userMoved = {
             lastLocation = it
+            Log.d("JoyStick", "$lastLocation")
         })
         PalFinderApp(lastLocation)
     }

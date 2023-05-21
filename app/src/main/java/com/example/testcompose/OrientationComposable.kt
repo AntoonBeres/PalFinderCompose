@@ -13,7 +13,7 @@ Uses the open-source compose-sensors package: https://github.com/mutualmobile/Co
 @Composable
 fun OrientationComposable(
     moved: (azimuth: Float) -> Unit = { _ -> }
-) {
+): Double {
     //val orientationState = rememberRotationVectorSensorState()
 
     // Get accelerometer and magnetometer readings
@@ -41,5 +41,6 @@ fun OrientationComposable(
     val azimuth = orientationAngles[0]
 
     moved(azimuth)
+    return azimuth.toDouble()
 
 }
