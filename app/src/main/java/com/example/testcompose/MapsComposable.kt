@@ -21,18 +21,15 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 
 // The actual maps composable:
-// Draws an interactive map on the screen
+// Draws an interactive map on the screen and allows you to select destination from the map
 // Based on official documentation on how to use the component
 // : https://developers.google.com/maps/documentation/android-sdk/maps-compose
 @Composable
 fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>, navEnabled: Boolean, onDestinationSelected: (destination_selected: LatLng) -> Unit) {
-    //Example location + camera position
-
 
     val center_pos by remember {
         mutableStateOf(current_pos)
     }
-
 
     // If navigation is enabled, make the camera zoom in and track the user location
     // otherwise, just give the user manual control over the camera
@@ -43,9 +40,6 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
             position = CameraPosition.fromLatLngZoom(center_pos, 16f)
         }
     }
-
-    //var cameraPositionState = CameraPosition.fromLatLngZoom(current_pos, 10f)
-
 
     // Add zooming buttons + "my location" button and enable gestures
     val uiSettings by remember {
