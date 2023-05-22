@@ -27,7 +27,7 @@ import kotlin.math.sqrt
 
 
 // The new "invisible" joystick, can be used by dragging from anywhere on the screen.
-// Some of the code was inspired by the source code for the original joystick component
+// Some of the code was inspired by the source code for the pre-made joystick component
 // https://github.com/manalkaff/JetStick
 @Composable
 fun ImprovedJoystickController(
@@ -45,7 +45,7 @@ fun ImprovedJoystickController(
 
     var azimuth by remember { mutableStateOf(0.0)}
 
-
+    // Get magnetormeter and accelerometer readings
     val magneticFieldSensorState = rememberMagneticFieldSensorState()
     val accelerometerSensorState = rememberAccelerometerSensorState()
     val accelerometerReading = FloatArray(3)
@@ -59,17 +59,23 @@ fun ImprovedJoystickController(
     magnetometerReading[1] = magneticFieldSensorState.yStrength
     magnetometerReading[2] = magneticFieldSensorState.zStrength
 
+    // Calculate device orientation from sensor readings
     SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)
     SensorManager.getOrientation(rotationMatrix, orientationAngles)
+
+    // This is the angle we're interested in: the direction the device is pointed towards relative to the magnetic north
     azimuth = orientationAngles[0].toDouble()
 
+
+    // Add a transparent red circle at the location the user starts to drag
+    // This way the user knows where dragging started when looking at phone and gives
+    // a visual queue as to where the user is dragging
     Canvas(modifier = Modifier.size(200.dp), onDraw = {
         drawCircle(color = Color.Red.copy(alpha = 0.3f), center= Offset(startX, startY+125))
 
     })
 
-    // Add a transparent blue dot at the location the user starts to drag
-    // This way the user knows where dragging started when looking at phone
+
 
 
     // Box fills the entire screen except for a small portion at the top
@@ -81,9 +87,9 @@ fun ImprovedJoystickController(
             .absolutePadding(
                 left = 0.dp,
                 right = 0.dp,
-                top = 50.dp,
+                top = 50.dp, // some padding on the top for the search-button etc
                 bottom = 0.dp
-            ) // some padding on the top for the search-button etc
+            )
             .fillMaxHeight().background(Color.Transparent)
             .pointerInput(Unit) {
                 detectDragGestures(onDragStart = {
@@ -98,20 +104,28 @@ fun ImprovedJoystickController(
                     pointerInputChange.consume()
                     offsetX += offset.x
                     offsetY += offset.y
-                    //Convert screen positioning to coordinates by taking negative of y
+                    // Convert screen positioning to coordinates by passing -offsetY instead of offsetY
                     // (the y-coordinate returned by dragging increases when going down and decreases when going up)
+                    // Call the "moved" function (implemented by the caller) with the joystick orientation (as x,y coordinates)
+                    // and device orientation
                     moved(
                         offsetX, -offsetY, azimuth
                     )
                 }
             }
     ) {
+        // Add a smaller transparent blue circle that moves with user dragging gestures
         Canvas(modifier = Modifier.size(30.dp), onDraw = {
             val reference_radius = 40000f
             val current_radius = offsetX.pow(2) + offsetY.pow(2)
 
             var x_offset = offsetX
             var y_offset = offsetY
+
+            // The open-source joystick, converted to polar coordinates etc to get direction and radius
+            // and then did a lot of unnecessary calculations
+            // This is a simpler calculation that achieves the same thing.. lock the maximum movement range of the inner
+            // joystick circle to the size of the big red circle
             if(current_radius > reference_radius) {
                 val ratio = sqrt(current_radius/reference_radius)
                 x_offset /= ratio
