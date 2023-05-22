@@ -50,7 +50,7 @@ object DirectionsProvider {
             .destination(dest).mode(TravelMode.BICYCLING) //"BICYCLING" gives a smoother route than "WALKING"
             .await()
         // Convert to waypoints and smooth the route
-        return directionResult.routes.toWaypoints().smootheRoute(30)
+        return directionResult.routes.toWaypoints().smootheRoute(15)
     }
 }
 

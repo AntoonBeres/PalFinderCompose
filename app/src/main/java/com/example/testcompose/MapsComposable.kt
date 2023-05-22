@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.Place
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -24,7 +25,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 // Based on official documentation on how to use the component
 // : https://developers.google.com/maps/documentation/android-sdk/maps-compose
 @Composable
-fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>, navEnabled: Boolean) {
+fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>, navEnabled: Boolean, onDestinationSelected: (destination_selected: LatLng) -> Unit) {
     //Example location + camera position
 
 
@@ -39,7 +40,7 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
         CameraPositionState(CameraPosition.fromLatLngZoom(center_pos, 20f))
     } else {
         rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(center_pos, 14f)
+            position = CameraPosition.fromLatLngZoom(center_pos, 16f)
         }
     }
 
@@ -67,6 +68,9 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
         cameraPositionState = cameraPositionState,
         properties = properties,
         uiSettings = uiSettings,
+        onPOIClick = {
+            onDestinationSelected(it.latLng)
+        }
         ) {
         //Add markers, a marker is added at the destination
         Marker(
@@ -78,7 +82,7 @@ fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: L
         Polyline(
             points = waypoints,
             visible = true,
-            width = 10f,
+            width = 15f,
         )
     }
 }

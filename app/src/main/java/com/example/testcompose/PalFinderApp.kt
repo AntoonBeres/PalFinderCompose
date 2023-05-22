@@ -70,10 +70,19 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
     Surface(modifier) {
         // If the current location is not (yet) available, initialize map to a default location
         if (current_loc == null) {
-            MapsComposable(user_loc, destination, waypoints, navigationRunning)
+            MapsComposable(user_loc, destination, waypoints, navigationRunning, onDestinationSelected = {})
         } else {
             user_loc = LatLng(current_loc.latitude, current_loc.longitude)
-            MapsComposable(user_loc, destination, waypoints, navigationRunning)
+            MapsComposable(user_loc, destination, waypoints, navigationRunning, onDestinationSelected = {
+                destination = it
+                waypoints = DirectionsProvider.getRouteWaypoints(
+                    user_loc.latitude,
+                    user_loc.longitude,
+                    it.latitude,
+                    it.longitude
+                )
+                nextWaypointIndex = 0
+            })
         }
 
         // A switch to turn tactile navigation on or off
@@ -147,7 +156,6 @@ fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
 
                     // Deal with circles, -180degrees = +180 degrees.. if difference is 360 degrees, difference is 0 degrees
                     val relativeCircle = abs(relative-360)
-
 
                     // Vibrate if finger pointed in correct direction
                     if(relative < 10 || relativeCircle < 10){
