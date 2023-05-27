@@ -19,17 +19,23 @@ import com.google.android.gms.location.Priority
 
 /**
  * Manages all location related tasks for the app.
+ * Official android documentation used:
+ * https://developer.android.com/training/location/retrieve-current
+ * https://developer.android.com/training/location/request-updates
  */
 @Composable
 fun LocationTracker(
     userMoved: (x: Location?) -> Unit = { _ -> }
 ) {
+    // Store last location
     var lastLocation: Location? by remember { mutableStateOf(null) }
     val context = LocalContext.current
+
+    // Location provide
     val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
-
+    // A location request, uses high accuracy location if available
     val locationRequest =
         LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).apply {
             setWaitForAccurateLocation(true)
@@ -42,11 +48,13 @@ fun LocationTracker(
             super.onLocationResult(userLocationResult)
             if (userLocationResult.lastLocation == null) return
             lastLocation = userLocationResult.lastLocation
-
+            // Whenever callback is received call the "userMoved" function (defined by the caller)
+            // with the location-update as a parameter
             userMoved(lastLocation)
         }
 
     }
+    // Check if permissions are available (required for fusedLocationClient.requestLocationUpdates)
     if (ActivityCompat.checkSelfPermission(
             context,
             android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -55,15 +63,9 @@ fun LocationTracker(
             android.Manifest.permission.ACCESS_COARSE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
     ) {
-        // TODO: Consider calling
-        //    ActivityCompat#requestPermissions
-        // here to request the missing permissions, and then overriding
-        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-        //                                          int[] grantResults)
-        // to handle the case where the user grants the permission. See the documentation
-        // for ActivityCompat#requestPermissions for more details.
         return
     }
+    // Get updates
     fusedLocationClient.requestLocationUpdates(
         locationRequest.build(), locationCallback, Looper.getMainLooper()
     )

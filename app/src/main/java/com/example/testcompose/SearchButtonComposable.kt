@@ -30,11 +30,15 @@ fun SearchButtonComposable(
     val intentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { activityResult ->
+        // Async code, if result is received
+        // run "onDestinationSelected" with the received place
         when (activityResult.resultCode) {
             Activity.RESULT_OK -> {
                 activityResult.data?.let {
                     val place = Autocomplete.getPlaceFromIntent(it)
-                    onDestinationSelected(place) // Run "onDestinationSelected" with the selected place as argument
+
+                    // Run "onDestinationSelected" with the selected place as argument
+                    onDestinationSelected(place)
                 }
             }
             Activity.RESULT_CANCELED -> {
@@ -42,7 +46,7 @@ fun SearchButtonComposable(
             }
         }
     }
-    // Launch the overlay with an intent
+    // Launch the overlay with an intent for place selection with autocomplete
     val launchMapInputOverlay = {
         Places.initialize(context, BuildConfig.GOOGLE_MAPS_API_KEY)
         val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)

@@ -30,10 +30,10 @@ import kotlin.math.sqrt
 // Some of the code was inspired by the source code for the pre-made joystick component
 // https://github.com/manalkaff/JetStick
 @Composable
-fun ImprovedJoystickController(
+fun JoystickController(
     moved: (x_drag: Float, y_drag: Float, deviceAzimuth: Double) -> Unit = { _, _, _ -> },
 
-) {
+    ) {
     // The dragging directions
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
@@ -43,7 +43,7 @@ fun ImprovedJoystickController(
     var startX by remember { mutableStateOf(0f) }
     var startY by remember { mutableStateOf(0f) }
 
-    var azimuth by remember { mutableStateOf(0.0)}
+    var azimuth by remember { mutableStateOf(0.0) }
 
     // Get magnetormeter and accelerometer readings
     val magneticFieldSensorState = rememberMagneticFieldSensorState()
@@ -71,11 +71,9 @@ fun ImprovedJoystickController(
     // This way the user knows where dragging started when looking at phone and gives
     // a visual queue as to where the user is dragging
     Canvas(modifier = Modifier.size(200.dp), onDraw = {
-        drawCircle(color = Color.Red.copy(alpha = 0.3f), center= Offset(startX, startY+125))
+        drawCircle(color = Color.Red.copy(alpha = 0.3f), center = Offset(startX, startY + 125))
 
     })
-
-
 
 
     // Box fills the entire screen except for a small portion at the top
@@ -90,7 +88,8 @@ fun ImprovedJoystickController(
                 top = 50.dp, // some padding on the top for the search-button etc
                 bottom = 0.dp
             )
-            .fillMaxHeight().background(Color.Transparent)
+            .fillMaxHeight()
+            .background(Color.Transparent)
             .pointerInput(Unit) {
                 detectDragGestures(onDragStart = {
                     offsetX = 0f
@@ -122,16 +121,20 @@ fun ImprovedJoystickController(
             var x_offset = offsetX
             var y_offset = offsetY
 
-            // The open-source joystick, converted to polar coordinates etc to get direction and radius
-            // and then did a lot of unnecessary calculations
+
+            // The open-source joystick originally converted to polar coordinates etc to get direction and radius
+            // and then did a lot of unnecessary calculations.
             // This is a simpler calculation that achieves the same thing.. lock the maximum movement range of the inner
             // joystick circle to the size of the big red circle
-            if(current_radius > reference_radius) {
-                val ratio = sqrt(current_radius/reference_radius)
+            if (current_radius > reference_radius) {
+                val ratio = sqrt(current_radius / reference_radius)
                 x_offset /= ratio
                 y_offset /= ratio
             }
-                drawCircle(color = Color.Blue.copy(alpha = 0.3f), center= Offset(startX+x_offset, startY+y_offset))
+            drawCircle(
+                color = Color.Blue.copy(alpha = 0.3f),
+                center = Offset(startX + x_offset, startY + y_offset)
+            )
 
         })
     }

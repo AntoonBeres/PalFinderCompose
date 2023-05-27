@@ -1,6 +1,5 @@
 package com.example.testcompose
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,17 +26,13 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun MapsComposable(current_pos: LatLng, destination_marker: LatLng, waypoints: List<LatLng>, navEnabled: Boolean, onDestinationSelected: (destination_selected: LatLng) -> Unit) {
 
-    val center_pos by remember {
-        mutableStateOf(current_pos)
-    }
-
     // If navigation is enabled, make the camera zoom in and track the user location
     // otherwise, just give the user manual control over the camera
     val cameraPositionState = if(navEnabled) {
-        CameraPositionState(CameraPosition.fromLatLngZoom(center_pos, 20f))
+        CameraPositionState(CameraPosition.fromLatLngZoom(current_pos, 20f))
     } else {
         rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(center_pos, 16f)
+            position = CameraPosition.fromLatLngZoom(current_pos, 16f)
         }
     }
 

@@ -61,7 +61,8 @@ fun distanceLatLng(lat1: Double, lon1: Double, lat2: Double, lon2: Double) : Dou
     val d = r * c
     return d * 1000 // meters
 }
-
+// Antoon Beres
+// Convert joystick coordinates to an angle in degrees
 fun joystickPosToAngle(x: Float, y: Float): Double {
     val angle: Double = atan2(y.toDouble(), x.toDouble()) * (180/ Math.PI)
     // make 0 the top position
