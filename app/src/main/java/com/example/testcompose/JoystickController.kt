@@ -26,9 +26,14 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-// The new "invisible" joystick, can be used by dragging from anywhere on the screen.
-// Some of the code was inspired by the source code for the pre-made joystick component
-// https://github.com/manalkaff/JetStick
+/**
+ The new self-created joystick, can be used by dragging from anywhere on the screen.
+ Some of the code was inspired by the source code for the pre-made open-source joystick component
+ https://github.com/manalkaff/JetStick
+
+ Additionally device orientation is calculated simultaneously during joystick usage.
+ This improves performance and efficiency
+*/
 @Composable
 fun JoystickController(
     moved: (x_drag: Float, y_drag: Float, deviceAzimuth: Double) -> Unit = { _, _, _ -> },
@@ -122,15 +127,18 @@ fun JoystickController(
             var y_offset = offsetY
 
 
-            // The open-source joystick originally converted to polar coordinates etc to get direction and radius
+            // The open-source joystick originally converted to polar coordinates and back to get direction and radius
             // and then did a lot of unnecessary calculations.
-            // This is a simpler calculation that achieves the same thing.. lock the maximum movement range of the inner
+
+            // This is a simpler calculation that achieves the same thing:
+            // constrain the maximum movement range of the inner
             // joystick circle to the size of the big red circle
             if (current_radius > reference_radius) {
                 val ratio = sqrt(current_radius / reference_radius)
                 x_offset /= ratio
                 y_offset /= ratio
             }
+            // Draw the inner joystick circle
             drawCircle(
                 color = Color.Blue.copy(alpha = 0.3f),
                 center = Offset(startX + x_offset, startY + y_offset)

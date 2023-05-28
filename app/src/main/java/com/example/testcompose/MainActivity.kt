@@ -2,7 +2,6 @@ package com.example.testcompose
 
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Surface
@@ -20,8 +19,13 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.PermissionsRequired
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
-/*
-This is like the main function, this is the entry point of our application
+/**
+ This is like the main function, this is the entry point of our application
+ Additionally it takes care of permissions. If location permissions aren't
+ already granted, it requests location permissions at launch.
+
+ The location tracker is initialized here so that recomposition of the
+ PalFinderApp composable is triggered when location updates are received.
  */
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
@@ -35,6 +39,7 @@ class MainActivity : ComponentActivity() {
                     android.Manifest.permission.ACCESS_FINE_LOCATION
                 )
             )
+            // The surface on which our entire application is drawn
             Surface(Modifier.onPlaced { multiplePermissionState.launchMultiplePermissionRequest() }) {
                 LocationPermission(multiplePermissionState = multiplePermissionState)
             }
@@ -46,18 +51,19 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GlobalView(modifier: Modifier = Modifier) {
     var lastLocation: Location? by remember { mutableStateOf(null) }
-
     Surface(modifier) {
         LocationTracker(userMoved = {
+            // Keep track of user-location and update "PalFinderApp" when a new location is received
             lastLocation = it
-            Log.d("JoyStick", "$lastLocation")
         })
+        // the actual app
         PalFinderApp(lastLocation)
     }
 }
 
 // Tutorial used: https://betterprogramming.pub/jetpack-compose-request-permissions-in-two-ways-fd81c4a702c
 // Handles location permissions and displays an empty screen with text if permissions aren't granted
+// If permissions are granted, just displays the app
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LocationPermission(

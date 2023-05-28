@@ -22,11 +22,16 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.LatLng
 import kotlin.math.abs
 
-
-// Put everything together (search-button, maps, joystick, ..)
+/**
+ This is the main code for the actual application.
+ Puts everything together (search-button, maps, joystick, ..)
+ Location updates are received from the main entry point, triggering recomposition
+ of this composable every time a location update is received
+ */
 @Composable
 fun PalFinderApp(current_loc: Location?, modifier: Modifier = Modifier) {
-    // The selected destination
+    // The selected destination. Default location in singapore so that it becomes clear
+    // if anything went wrong with the LocationTracker
     var destination by remember { mutableStateOf(LatLng(1.35, 103.87)) }
     // List of waypoints
     var waypoints: List<LatLng> by remember { mutableStateOf(emptyList()) }

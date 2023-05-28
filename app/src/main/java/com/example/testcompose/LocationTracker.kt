@@ -29,6 +29,7 @@ fun LocationTracker(
 ) {
     // Store last location
     var lastLocation: Location? by remember { mutableStateOf(null) }
+
     val context = LocalContext.current
 
     // Location provide

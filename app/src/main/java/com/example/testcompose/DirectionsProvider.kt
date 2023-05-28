@@ -6,8 +6,10 @@ import com.google.maps.model.DirectionsRoute
 import com.google.maps.model.LatLng
 import com.google.maps.model.TravelMode
 
-/*
-Converts a result from the "directions api" into a list of waypoints
+/**
+ This file provides an interface to the google "Directions" API
+ It converts a result from the "directions api" into a list of waypoints
+ The waypoints are subsequently processed in order to provide a smooth route
  */
 fun Array<out DirectionsRoute>?.toWaypoints(): List<com.google.android.gms.maps.model.LatLng> {
     return this?.last()!!.overviewPolyline.decodePath().map { point ->
@@ -50,7 +52,7 @@ object DirectionsProvider {
             .destination(dest).mode(TravelMode.BICYCLING) //"BICYCLING" gives a smoother route than "WALKING"
             .await()
         // Convert to waypoints and smooth the route
-        return directionResult.routes.toWaypoints().smootheRoute(15)
+        return directionResult.routes.toWaypoints().smootheRoute(10)
     }
 }
 

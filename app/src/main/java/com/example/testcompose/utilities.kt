@@ -9,7 +9,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
 
-/*
+/**
  This file contains all non-compose and non-ui related functions
  like calculating the bearing and distance between 2 coordinates given their latitude and longitude
  */
