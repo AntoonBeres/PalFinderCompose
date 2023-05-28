@@ -1,4 +1,4 @@
-package com.example.testcompose
+package com.example.PalFinder
 
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult

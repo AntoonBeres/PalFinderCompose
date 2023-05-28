@@ -1,4 +1,4 @@
-package com.example.testcompose.ui.theme
+package com.example.PalFinder.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

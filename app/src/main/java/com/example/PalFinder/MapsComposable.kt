@@ -1,4 +1,4 @@
-package com.example.testcompose
+package com.example.PalFinder
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

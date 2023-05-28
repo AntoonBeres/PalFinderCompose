@@ -1,4 +1,4 @@
-package com.example.testcompose.ui.theme
+package com.example.PalFinder.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

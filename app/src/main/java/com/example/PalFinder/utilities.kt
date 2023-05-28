@@ -1,4 +1,4 @@
-package com.example.testcompose
+package com.example.PalFinder
 
 import kotlin.math.PI
 import kotlin.math.abs

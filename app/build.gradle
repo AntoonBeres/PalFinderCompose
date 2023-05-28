@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.testcompose'
+    namespace 'com.example.PalFinder'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.testcompose"
+        applicationId "com.example.PalFinder"
         minSdk 28
         targetSdk 33
         versionCode 1

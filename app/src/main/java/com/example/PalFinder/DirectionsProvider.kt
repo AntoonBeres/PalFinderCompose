@@ -1,4 +1,4 @@
-package com.example.testcompose
+package com.example.PalFinder
 
 import com.google.maps.DirectionsApi
 import com.google.maps.GeoApiContext

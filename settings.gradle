@@ -23,5 +23,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }*/
-rootProject.name = "TestCompose"
+rootProject.name = "PalFinder Navigator"
 include ':app'

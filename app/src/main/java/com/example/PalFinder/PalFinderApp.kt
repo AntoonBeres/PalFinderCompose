@@ -1,4 +1,4 @@
-package com.example.testcompose
+package com.example.PalFinder
 
 import android.content.Context
 import android.location.Location
